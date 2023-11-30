@@ -42,14 +42,23 @@ export class AuthService {
   }
 
   checkAuthenticationStatus() {
-    this.http.get<{ isAuthenticated: boolean }>(`${this.apiUrl}/user/check-auth`, { withCredentials: true })
+    this.http.post<{ isAuthenticated: boolean }>(`${this.apiUrl}/user/check-auth`, { withCredentials: true })
       .subscribe({
         next: (response) => {
+          // Si la réponse est positive, l'utilisateur est authentifié
+          console.log('Réponse de check-auth:', response.isAuthenticated);
           this.isAuthenticated.next(response.isAuthenticated);
         },
         error: (error) => {
-          console.error('Erreur lors de la vérification du statut d\'authentification:', error);
-          this.isAuthenticated.next(false);
+          // Vérifiez le type d'erreur
+          // Si c'est une erreur d'authentification, vous pouvez choisir de ne pas la logger
+          if (error.status === 401) { // 401 signifie "Non autorisé"
+            // Il est normal que l'utilisateur non authentifié reçoive cette erreur
+            this.isAuthenticated.next(false);
+          } else {
+            // Pour les autres types d'erreurs, vous pouvez choisir de les logger
+            console.error('Erreur inattendue lors de la vérification du statut d\'authentification:', error);
+          }
         }
       });
   }
