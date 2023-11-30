@@ -195,7 +195,7 @@ export class AuthService {
   }
   
   getUserInfoFromCookie(): Observable<{ role: string, id: string }> {
-    return this.http.get<{ role: string, id: string }>(`${this.apiUrl}/user/cookie/auth`);
+    return this.http.get<{ role: string, id: string }>(`${this.apiUrl}/user/cookie/auth`, { withCredentials: true }); // On ajout withCredentials: true pour indiquer à Angular d'envoyer le cookie qui a été stocké dans la requête
   }
 
   //Methode pour l'inscription
