@@ -201,10 +201,8 @@ export class AuthService {
     );
   }
   
-  getUserInfoFromCookie(): Observable<{ userRole: string, userId: number }> {
-    return this.http.get<{ userRole: string, userId: number }>(`${this.apiUrl}/user/cookie/auth`, { withCredentials: true }).pipe(
-      tap(userInfo => console.log('User info from cookie:', userInfo)) // Ajoutez ceci pour logger la réponse
-    ); // On ajout withCredentials: true pour indiquer à Angular d'envoyer le cookie qui a été stocké dans la requête
+  getUserInfoFromCookie(): Observable<{ userRole: string, userId: string }> {
+    return this.http.get<{ userRole: string, userId: string }>(`${this.apiUrl}/user/cookie/auth`, { withCredentials: true }) // On ajout withCredentials: true pour indiquer à Angular d'envoyer le cookie qui a été stocké dans la requête
   }
 
   //Methode pour l'inscription
