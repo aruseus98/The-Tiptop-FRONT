@@ -39,10 +39,10 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.auth.isLoggedIn().subscribe((loggedIn) => {
-      this.isLoggedIn = loggedIn; // vérifie l'etat de la connexion (true si connecté)
-      console.log(loggedIn);
-    });
+    // this.auth.isLoggedIn().subscribe((loggedIn) => {
+    //   this.isLoggedIn = loggedIn; // vérifie l'etat de la connexion (true si connecté)
+    //   console.log(loggedIn);
+    // });
     // si l'utilisateur est déjà connecté il a pas acces à la route "auth/login" et on le renvoie sur la "home" 
     // si non il a l'accès
     /*if (this.isLoggedIn) {

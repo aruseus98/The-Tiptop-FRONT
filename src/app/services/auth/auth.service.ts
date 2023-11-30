@@ -31,7 +31,6 @@ export class AuthService {
   };
 
   constructor(private router: Router, private http: HttpClient, private cookieService: CookieService, private route: ActivatedRoute) {
-    this.checkAuthenticationStatus();
   }
 
   checkAuthenticationStatus() {

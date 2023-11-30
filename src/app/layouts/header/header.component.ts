@@ -28,10 +28,10 @@ export class HeaderComponent implements OnInit {
     //   this.isLoggedIn = loggedIn; // vérifie l'etat de la connexion (true si connecté)
     //   console.log(loggedIn);
     // });
-    this.auth.isLoggedIn().subscribe((isLoggedIn) => {
-      this.isLoggedIn = isLoggedIn;
-      // Autres logiques en fonction de l'état d'authentification
-    });
+    // this.auth.isLoggedIn().subscribe((isLoggedIn) => {
+    //   this.isLoggedIn = isLoggedIn;
+    //   // Autres logiques en fonction de l'état d'authentification
+    // });
     this.checkLoginStatus();
     // this.auth.isLoggedIn().subscribe((loggedIn) => {
     //   this.isLoggedIn = loggedIn;
@@ -124,6 +124,18 @@ export class HeaderComponent implements OnInit {
 
 
   logout() {
-    this.auth.logout();
+    this.auth.logout().subscribe({
+      next: () => {
+        // Gestion de la déconnexion réussie
+        console.log('Déconnexion réussie');
+        // Redirection vers la page de connexion ou la page d'accueil
+        this.router.navigate(['/auth/login']);
+      },
+      error: (error) => {
+        // Gestion des erreurs
+        console.error('Erreur lors de la déconnexion:', error);
+        // Afficher un message d'erreur à l'utilisateur si nécessaire
+      }
+    });
   }
 }
