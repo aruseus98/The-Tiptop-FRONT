@@ -1,5 +1,5 @@
 // environment.ts
 export const environment = {
-    production: false,
+    production: true,
     endpointUrl: 'https://api-dev.dsp-archiwebo22b-ji-rw-ah.fr'
   };
