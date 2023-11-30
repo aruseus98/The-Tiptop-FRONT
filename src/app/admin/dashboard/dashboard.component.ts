@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { Meta, Title } from '@angular/platform-browser';
 
@@ -15,7 +15,7 @@ export class DashboardComponent {
   title= 'Dashboard | Thé Tiptop | Jeu concours';
   isSidebarActive = false;
 
-  constructor(private auth: AuthService, private titleService : Title, private metaService: Meta) {
+  constructor(private auth: AuthService, private titleService : Title, private metaService: Meta, private router: Router) {
     this.titleService.setTitle(this.title);
     this.addTag();
   }
@@ -32,7 +32,20 @@ export class DashboardComponent {
   }
 
   logout() {
-    this.auth.logout();
+    this.auth.logout().subscribe({
+      next: () => {
+        // Gestion de la déconnexion réussie
+        console.log('Déconnexion réussie');
+        // Redirection vers la page de connexion ou la page d'accueil
+        this.router.navigate(['/auth/login']);
+      },
+      error: (error) => {
+        // Gestion des erreurs
+        console.error('Erreur lors de la déconnexion:', error);
+        // Afficher un message d'erreur à l'utilisateur si nécessaire
+      }
+    });
   }
+  
 
 }

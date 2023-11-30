@@ -110,10 +110,23 @@ export class AuthService {
     return this.cookieService.get('userId'); 
   }
 
-  logout() {
-    this.cookieService.delete('token');
-    this.isAuthenticated.next(false); // Émet un signal que l'utilisateur n'est plus authentifié
-    this.router.navigate(['']);
+  // logout() {
+  //   this.cookieService.delete('token');
+  //   this.isAuthenticated.next(false); // Émet un signal que l'utilisateur n'est plus authentifié
+  //   this.router.navigate(['']);
+  // }
+
+  logout(): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/user/logout`, {}, { withCredentials: true }).pipe(
+      tap(() => {
+        this.isAuthenticated.next(false); // Émet un signal que l'utilisateur n'est plus authentifié
+        this.router.navigate(['']); // Redirigez vers la page d'accueil ou la page de connexion
+      }),
+      catchError(error => {
+        console.error('Erreur lors de la déconnexion:', error);
+        return throwError(() => new Error('Échec de la déconnexion'));
+      })
+    );
   }
 
   // login({ email, password }: any): Observable<any> {
