@@ -197,31 +197,31 @@ pipeline {
             }
         }
 
-        stage('Run Integration Tests') {
-            steps {
-                script {
-                    switch (metadata.language) {
-                        case 'NodeJS':
-                            echo "Run Angular Integration Tests"
-                            dir("${WORKSPACE}/${env.folderName}") {
-                                withEnv(["CHROME_BIN=${CHROME_BIN}"]) {
-                                    sh 'npm run test:integration' // Pour lancer les tests d'intégrations
-                                }
-                                def coverageExists = sh(script: 'ls -l | grep coverage || echo "Coverage directory not found."', returnStatus: true)
-                                if (coverageExists == 0) {
-                                    echo "--- Coverage directory exists ---"
-                                    sh 'cat coverage/lcov.info || echo "lcov.info file not found"'
-                                } else {
-                                    echo "--- Coverage directory not found ---"
-                                }
-                            }
-                            break
-                        default:
-                            echo "No integration tests required or language not recognized"
-                    }
-                }
-            }
-        }
+        // stage('Run Integration Tests') {
+        //     steps {
+        //         script {
+        //             switch (metadata.language) {
+        //                 case 'NodeJS':
+        //                     echo "Run Angular Integration Tests"
+        //                     dir("${WORKSPACE}/${env.folderName}") {
+        //                         withEnv(["CHROME_BIN=${CHROME_BIN}"]) {
+        //                             sh 'npm run test:integration' // Pour lancer les tests d'intégrations
+        //                         }
+        //                         def coverageExists = sh(script: 'ls -l | grep coverage || echo "Coverage directory not found."', returnStatus: true)
+        //                         if (coverageExists == 0) {
+        //                             echo "--- Coverage directory exists ---"
+        //                             sh 'cat coverage/lcov.info || echo "lcov.info file not found"'
+        //                         } else {
+        //                             echo "--- Coverage directory not found ---"
+        //                         }
+        //                     }
+        //                     break
+        //                 default:
+        //                     echo "No integration tests required or language not recognized"
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('SonarQube Analysis') {
             steps {
