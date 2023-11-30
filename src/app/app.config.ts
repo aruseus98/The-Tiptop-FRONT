@@ -9,7 +9,7 @@ import { provideServiceWorker } from '@angular/service-worker';
 
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideRouter(routes /*, withDebugTracing()*/),
+  providers: [provideRouter(routes , withDebugTracing()),
     provideAnimations(), {
         provide: HTTP_INTERCEPTORS,
         useClass: AuthInterceptor,

@@ -162,6 +162,7 @@ export class AuthService {
         if (httpResponse.status === 200) {
           // Effectuez l'appel supplémentaire pour obtenir le rôle et l'ID de l'utilisateur
           return this.getUserInfoFromCookie().pipe(
+            tap(userInfo => console.log('User info from cookie:', userInfo)),
             // Mappez la réponse pour retourner true puisque la connexion a réussi
             map(userInfo => {
               // Naviguer en fonction du rôle de l'utilisateur
@@ -189,13 +190,16 @@ export class AuthService {
         }
       }),
       catchError((error) => {
+        console.error('Error fetching user info from cookie:', error);
         throw error;
       })
     );
   }
   
   getUserInfoFromCookie(): Observable<{ role: string, id: string }> {
-    return this.http.get<{ role: string, id: string }>(`${this.apiUrl}/user/cookie/auth`, { withCredentials: true }); // On ajout withCredentials: true pour indiquer à Angular d'envoyer le cookie qui a été stocké dans la requête
+    return this.http.get<{ role: string, id: string }>(`${this.apiUrl}/user/cookie/auth`, { withCredentials: true }).pipe(
+      tap(userInfo => console.log('User info from cookie:', userInfo)) // Ajoutez ceci pour logger la réponse
+    ); // On ajout withCredentials: true pour indiquer à Angular d'envoyer le cookie qui a été stocké dans la requête
   }
 
   //Methode pour l'inscription
