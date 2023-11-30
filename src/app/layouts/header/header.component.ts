@@ -25,15 +25,16 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit(): void {
     this.checkLoginStatus();
-    this.auth.isLoggedIn().subscribe((loggedIn) => {
-      this.isLoggedIn = loggedIn;
-    });
+    console.log(this.checkLoginStatus);
+    // this.auth.isLoggedIn().subscribe((loggedIn) => {
+    //   this.isLoggedIn = loggedIn;
+    // });
     // console.log(this.auth.getRoleUser());
-    if (this.auth.getRoleUser() === "admin") {
-      this.isLoggedAsAdmin = true;
-    } else if (this.auth.getRoleUser() === "employee") {
-      this.isLoggedAsEmploye = true;
-    }
+    // if (this.auth.getRoleUser() === "admin") {
+    //   this.isLoggedAsAdmin = true;
+    // } else if (this.auth.getRoleUser() === "employee") {
+    //   this.isLoggedAsEmploye = true;
+    // }
 
     // this.getUserData();
     // N'exécute les méthodes de userService s'il y a un token
@@ -59,11 +60,12 @@ export class HeaderComponent implements OnInit {
 
   checkLoginStatus(): void {
     this.auth.getUserInfoFromCookie().subscribe({
-      next: (data) => {
+      next: (userInfo) => {
         this.isLoggedIn = true;
-        //this.userData = data;
-        this.isLoggedAsAdmin = data.userRole === 'admin';
-        this.isLoggedAsEmploye = data.userRole === 'employee';
+        this.isLoggedAsAdmin = userInfo.userRole === 'admin';
+        this.isLoggedAsEmploye = userInfo.userRole === 'employee';
+        // Vous pourriez également mettre à jour userData ici, si nécessaire
+        // ...
       },
       error: (error) => {
         console.error('Erreur lors de la vérification de l\'authentification:', error);

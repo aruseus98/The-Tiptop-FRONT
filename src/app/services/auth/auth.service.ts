@@ -32,11 +32,11 @@ export class AuthService {
 
   constructor(private router: Router, private http: HttpClient, private cookieService: CookieService, private route: ActivatedRoute) {
     // Vérifiez si un token est déjà présent lors de l'initialisation du service
-    const token = this.getToken();
+    // const token = this.getToken();
     //console.log('Token actuel dans le constructeur:', token);
-    const isAuthenticatedValue = token !== null;
+    // const isAuthenticatedValue = token !== null;
     //console.log('Valeur de isAuthenticated.next:', isAuthenticatedValue);
-    this.isAuthenticated.next(isAuthenticatedValue);
+    // this.isAuthenticated.next(isAuthenticatedValue);
 
     this.checkAuthenticationStatus();
   }
