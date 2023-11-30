@@ -41,8 +41,8 @@ export class AuthService {
 
 
 
-  setToken(token: string) {
-    this.cookieService.set('token', token, this.cookieOptions); // enregistrez le jeton dans cookieService
+  setToken() {
+    //this.cookieService.set('token', token, this.cookieOptions); // enregistrez le jeton dans cookieService
     this.isAuthenticated.next(true); // Émet un signal que l'utilisateur est maintenant authentifié
   }
 
@@ -159,8 +159,7 @@ export class AuthService {
         // Vérifiez si la connexion est réussie en examinant le statut de la réponse HTTP
         if (httpResponse.status === 200) {
           // Effectuez l'appel supplémentaire pour obtenir le rôle et l'ID de l'utilisateur
-          this.isAuthenticated.next(true); // Émet un signal que l'utilisateur est maintenant authentifié
-          console.log(this.isAuthenticated)
+          this.setToken();
           return this.getUserInfoFromCookie().pipe(
             tap(userInfo => console.log('User info from cookie:', userInfo)),
             // Mappez la réponse pour retourner true puisque la connexion a réussi
