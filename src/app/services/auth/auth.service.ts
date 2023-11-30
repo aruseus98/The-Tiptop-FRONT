@@ -158,31 +158,34 @@ export class AuthService {
   
     return this.http.post<AuthResponse>(this.apiUrl + '/user/login', credentials, { withCredentials: true }).pipe(
       switchMap(response => {
+        // Si la connexion est réussie, la réponse devrait indiquer que error est false
         if (!response.error) {
-          // La réponse est maintenant un cookie set par le serveur, donc pas de JWT dans la réponse JSON
-          // Faites un appel supplémentaire pour obtenir le rôle et l'ID de l'utilisateur
-          return this.getUserInfoFromCookie();
+          // Effectuez l'appel supplémentaire pour obtenir le rôle et l'ID de l'utilisateur
+          return this.getUserInfoFromCookie().pipe(
+            // Mappez la réponse pour retourner true puisque la connexion a réussi
+            map(userInfo => {
+              // Naviguer en fonction du rôle de l'utilisateur
+              switch (userInfo.role) {
+                case 'admin':
+                  this.router.navigate(['/admin/dashboard']);
+                  break;
+                case 'employee':
+                  // ...
+                  break;
+                case 'customer':
+                  this.router.navigate(['/concours']);
+                  break;
+                default:
+                  // ...
+                  break;
+              }
+              return true; // Connexion réussie
+            })
+          );
         } else {
+          // Si la réponse indique une erreur, renvoyez une erreur dans le flux Observable
           return throwError(() => new Error(response.message[0]));
         }
-      }),
-      map(userInfo => {
-        // Naviguer en fonction du rôle de l'utilisateur
-        switch (userInfo.role) {
-          case 'admin':
-            this.router.navigate(['/admin/dashboard']);
-            break;
-          case 'employee':
-            // Gérez les autres cas de rôle ici.
-            break;
-          case 'customer':
-            this.router.navigate(['/concours']);
-            break;
-          default:
-            // Gérer les cas par défaut ou inattendus
-            break;
-        }
-        return userInfo.role;
       }),
       catchError((error) => {
         throw error;
