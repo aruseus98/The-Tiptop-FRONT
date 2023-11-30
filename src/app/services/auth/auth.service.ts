@@ -46,12 +46,16 @@ export class AuthService {
     this.isAuthenticated.next(true); // Émet un signal que l'utilisateur est maintenant authentifié
   }
 
+  setUser() {
+    this.isAuthenticated.next(true); // Émet un signal que l'utilisateur est maintenant authentifié
+  }
+
   getToken(): string | null {
     const token = this.cookieService.get('token');
     return token ? token : null; // Renvoie null si le token est une chaîne vide ou undefined
   }
 
-    handleAuthentication(): void {
+  handleAuthentication(): void {
     this.route.queryParams.subscribe(params => {
       const jwt = params['jwt'];
       if (jwt) {
@@ -159,6 +163,7 @@ export class AuthService {
         // Vérifiez si la connexion est réussie en examinant le statut de la réponse HTTP
         if (httpResponse.status === 200) {
           // Effectuez l'appel supplémentaire pour obtenir le rôle et l'ID de l'utilisateur
+          this.setUser();
           console.log(this.isAuthenticated)
           return this.getUserInfoFromCookie().pipe(
             tap(userInfo => console.log('User info from cookie:', userInfo)),
@@ -179,7 +184,7 @@ export class AuthService {
                   // ...
                   break;
               }
-              return this.isAuthenticated.next(true); // Émet un signal que l'utilisateur est maintenant authentifié
+              return true; // Connexion réussie
             })
           );
         } else {
