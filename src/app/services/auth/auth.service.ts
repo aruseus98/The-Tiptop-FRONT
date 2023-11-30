@@ -160,6 +160,7 @@ export class AuthService {
         if (httpResponse.status === 200) {
           // Effectuez l'appel supplémentaire pour obtenir le rôle et l'ID de l'utilisateur
           this.isAuthenticated.next(true); // Émet un signal que l'utilisateur est maintenant authentifié
+          console.log(this.isAuthenticated)
           return this.getUserInfoFromCookie().pipe(
             tap(userInfo => console.log('User info from cookie:', userInfo)),
             // Mappez la réponse pour retourner true puisque la connexion a réussi
