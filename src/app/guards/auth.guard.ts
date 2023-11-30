@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { AuthService } from '../services/auth/auth.service';
-import { Observable, map, take } from 'rxjs';
+import { Observable, map, take, catchError, switchMap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,27 +12,27 @@ export class authGuard implements CanActivate {
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
     return this.authService.isLoggedIn().pipe(
-      take(1), // Prend la valeur actuelle et complète l'Observable
-      map((loggedIn: boolean) => {
-        const userRole = this.authService.getRoleUser();
-
+      switchMap((loggedIn: boolean) => {
+        take(1) // Prend la valeur actuelle et complète l'Observable
         if (!loggedIn) {
           this.router.navigate(['auth/login']);
-          return false;
+          return [false]; // retourner un tableau ici pour que cela corresponde à la signature Observable<boolean>
         }
-
-        if (userRole === 'admin' || userRole === 'employee') {
-          // Pas besoin de rediriger ici car si le garde passe, la navigation vers le DashboardComponent se produira automatiquement
-          //this.router.navigate(['admin/dashboard']);
-          console.log('Je suis dedans')
-          return true;
-        }
-
-        // Si l'utilisateur n'est pas admin, redirigez-le vers la page d'accueil ou n'importe quelle autre page appropriée
-        this.router.navigate(['/']);
-        return false;
+        return this.authService.getUserInfoFromCookie().pipe(
+          map(userInfo => {
+            if (userInfo.role === 'admin' || userInfo.role === 'employee') {
+              return true;
+            }
+            this.router.navigate(['/']);
+            return false;
+          }),
+          catchError(error => {
+            // Si une erreur se produit (par exemple, un token invalide), redirigez l'utilisateur vers la page de connexion
+            this.router.navigate(['auth/login']);
+            return [false];
+          })
+        );
       })
     );
   }
 }
-

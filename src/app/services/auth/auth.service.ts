@@ -114,43 +114,84 @@ export class AuthService {
     this.router.navigate(['']);
   }
 
+  // login({ email, password }: any): Observable<any> {
+  //   console.log('login: Attempting to log in with', email);
+  //   const credentials = { email, password };
+  //   console.log("user try to log with user name : ", credentials.email, " and password : ", credentials.password);
+
+  //   return this.http.post<AuthResponse>(this.apiUrl + '/user/login', credentials).pipe(
+  //     switchMap((response) => {
+  //       if (!response.error) {
+  //         const tokenDecoded = jwtDecode<JwtPayload>(response.jwt);
+  //         const roleUser = tokenDecoded.role as string;
+  //         const roleId = tokenDecoded.id as string;
+  //         this.setToken(response.jwt);
+  //         this.setRoleUser(roleUser);
+  //         this.setIdUser(roleId);
+
+  //         // Au lieu de naviguer ici, retournez un nouvel Observable qui décide où naviguer.
+  //         return of(roleUser); // Ici, 'of' est utilisé pour transformer la valeur en Observable.
+  //       } else {
+  //         return throwError(() => new Error(response.message[0]));
+  //       }
+  //     }),
+  //     map(roleUser => {
+  //       if (roleUser === 'admin') {
+  //         this.router.navigate(['/admin/dashboard']);
+  //       } else if (roleUser === 'employee') {
+  //         // Gérez les autres cas de rôle ici.
+  //       } else if (roleUser === 'customer') {
+  //         this.router.navigate(['/concours']);
+  //       } else {
+
+  //       }
+  //       return roleUser; // Vous pouvez toujours renvoyer le rôle si nécessaire pour la suite du traitement.
+  //     }),
+  //     catchError((error) => {
+  //       throw error;
+  //     })
+  //   );
+  // }
+
   login({ email, password }: any): Observable<any> {
-    console.log('login: Attempting to log in with', email);
     const credentials = { email, password };
-    console.log("user try to log with user name : ", credentials.email, " and password : ", credentials.password);
-
+  
     return this.http.post<AuthResponse>(this.apiUrl + '/user/login', credentials).pipe(
-      switchMap((response) => {
+      switchMap(response => {
         if (!response.error) {
-          const tokenDecoded = jwtDecode<JwtPayload>(response.jwt);
-          const roleUser = tokenDecoded.role as string;
-          const roleId = tokenDecoded.id as string;
-          this.setToken(response.jwt);
-          this.setRoleUser(roleUser);
-          this.setIdUser(roleId);
-
-          // Au lieu de naviguer ici, retournez un nouvel Observable qui décide où naviguer.
-          return of(roleUser); // Ici, 'of' est utilisé pour transformer la valeur en Observable.
+          // La réponse est maintenant un cookie set par le serveur, donc pas de JWT dans la réponse JSON
+          // Faites un appel supplémentaire pour obtenir le rôle et l'ID de l'utilisateur
+          return this.getUserInfoFromCookie();
         } else {
           return throwError(() => new Error(response.message[0]));
         }
       }),
-      map(roleUser => {
-        if (roleUser === 'admin') {
-          this.router.navigate(['/admin/dashboard']);
-        } else if (roleUser === 'employee') {
-          // Gérez les autres cas de rôle ici.
-        } else if (roleUser === 'customer') {
-          this.router.navigate(['/concours']);
-        } else {
-
+      map(userInfo => {
+        // Naviguer en fonction du rôle de l'utilisateur
+        switch (userInfo.role) {
+          case 'admin':
+            this.router.navigate(['/admin/dashboard']);
+            break;
+          case 'employee':
+            // Gérez les autres cas de rôle ici.
+            break;
+          case 'customer':
+            this.router.navigate(['/concours']);
+            break;
+          default:
+            // Gérer les cas par défaut ou inattendus
+            break;
         }
-        return roleUser; // Vous pouvez toujours renvoyer le rôle si nécessaire pour la suite du traitement.
+        return userInfo.role;
       }),
       catchError((error) => {
         throw error;
       })
     );
+  }
+  
+  getUserInfoFromCookie(): Observable<{ role: string, id: string }> {
+    return this.http.get<{ role: string, id: string }>(`${this.apiUrl}/user/cookie/auth`);
   }
 
   //Methode pour l'inscription
