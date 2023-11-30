@@ -17,7 +17,7 @@ export class AdminService {
 
   getUsersWithRoleClient(): Observable<UserAdmin[]> {
     // HttpClient assume par défaut que la réponse est un JSON, donc pas besoin de .json()
-    return this.http.get<{ users: UserAdmin[] }>(this.endpointUrl + '/user/role/customer').pipe(
+    return this.http.get<{ users: UserAdmin[] }>(this.endpointUrl + '/user/role/customer', { withCredentials: true }).pipe(
       map(response => response.users) // Assurez-vous que cela renvoie un tableau
     );
   }
