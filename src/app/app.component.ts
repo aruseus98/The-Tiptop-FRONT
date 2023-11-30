@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { LayoutsComponent } from './layouts/layouts.component';
+import { AuthService } from './services/auth/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -12,4 +13,14 @@ import { LayoutsComponent } from './layouts/layouts.component';
 })
 export class AppComponent {
   title = 'the-tiptop-front';
+
+  constructor(private authService: AuthService) {}
+
+  ngOnInit(): void {
+    // Initialiser l'état d'authentification
+    this.authService.checkAuthenticationStatus();
+    this.authService.isLoggedIn().subscribe(isLoggedIn => {
+      console.log('Utilisateur est connecté:', isLoggedIn);
+    });
+  }
 }

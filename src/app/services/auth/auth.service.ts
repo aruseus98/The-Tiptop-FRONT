@@ -31,36 +31,29 @@ export class AuthService {
   };
 
   constructor(private router: Router, private http: HttpClient, private cookieService: CookieService, private route: ActivatedRoute) {
-    // Vérifiez si un token est déjà présent lors de l'initialisation du service
-    // const token = this.getToken();
-    //console.log('Token actuel dans le constructeur:', token);
-    // const isAuthenticatedValue = token !== null;
-    //console.log('Valeur de isAuthenticated.next:', isAuthenticatedValue);
-    // this.isAuthenticated.next(isAuthenticatedValue);
-
     this.checkAuthenticationStatus();
   }
 
   checkAuthenticationStatus() {
-    this.http.post<{ isAuthenticated: boolean }>(`${this.apiUrl}/user/check-auth`, { withCredentials: true })
+    this.http.post<{ isAuthenticated: boolean }>(`${this.apiUrl}/user/check-auth`, {}, { withCredentials: true })
       .subscribe({
         next: (response) => {
-          // Si la réponse est positive, l'utilisateur est authentifié
-          console.log('Réponse de check-auth:', response.isAuthenticated);
+          // Mettre à jour l'état d'authentification basé sur la réponse
           this.isAuthenticated.next(response.isAuthenticated);
         },
         error: (error) => {
-          // Vérifiez le type d'erreur
-          // Si c'est une erreur d'authentification, vous pouvez choisir de ne pas la logger
-          if (error.status === 401) { // 401 signifie "Non autorisé"
-            // Il est normal que l'utilisateur non authentifié reçoive cette erreur
+          if (error.status === 401) {
+            // En cas de réponse non autorisée, considérez l'utilisateur comme non authentifié
             this.isAuthenticated.next(false);
           } else {
-            // Pour les autres types d'erreurs, vous pouvez choisir de les logger
-            console.error('Erreur inattendue lors de la vérification du statut d\'authentification:', error);
+            console.error('Erreur lors de la vérification du statut d\'authentification:', error);
           }
         }
       });
+  }
+
+  isLoggedIn() {
+    return this.isAuthenticated.asObservable();
   }
 
   setToken(token: string) {
@@ -108,10 +101,6 @@ export class AuthService {
       );
   }
 
-  isLoggedIn() {
-    return this.isAuthenticated.asObservable();
-  }
-
   // Appelé lors de la connexion pour stocker le rôle dans depuis les cookies
   setRoleUser(userRole: string) {
     this.cookieService.set('userRole', userRole, this.cookieOptions); // Stocke le rôle dans le cookieService
@@ -131,12 +120,6 @@ export class AuthService {
   getIdUser(): string | null {
     return this.cookieService.get('userId'); 
   }
-
-  // logout() {
-  //   this.cookieService.delete('token');
-  //   this.isAuthenticated.next(false); // Émet un signal que l'utilisateur n'est plus authentifié
-  //   this.router.navigate(['']);
-  // }
 
   logout(): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/user/logout`, {}, { withCredentials: true }).pipe(
