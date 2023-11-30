@@ -37,9 +37,22 @@ export class AuthService {
     const isAuthenticatedValue = token !== null;
     //console.log('Valeur de isAuthenticated.next:', isAuthenticatedValue);
     this.isAuthenticated.next(isAuthenticatedValue);
+
+    this.checkAuthenticationStatus();
   }
 
-
+  checkAuthenticationStatus() {
+    this.http.get<{ isAuthenticated: boolean }>(`${this.apiUrl}/user/check-auth`, { withCredentials: true })
+      .subscribe({
+        next: (response) => {
+          this.isAuthenticated.next(response.isAuthenticated);
+        },
+        error: (error) => {
+          console.error('Erreur lors de la vérification du statut d\'authentification:', error);
+          this.isAuthenticated.next(false);
+        }
+      });
+  }
 
   setToken(token: string) {
     this.cookieService.set('token', token, this.cookieOptions); // enregistrez le jeton dans cookieService
