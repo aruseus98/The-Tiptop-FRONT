@@ -11,27 +11,18 @@ export class authGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
-    return this.authService.isLoggedIn().pipe(
-      switchMap((loggedIn: boolean) => {
-        if (!loggedIn) {
-          this.router.navigate(['auth/login']);
-          return of(false); // Renvoie un nouvel Observable indiquant que l'authentification a échoué
+    return this.authService.getUserInfoFromCookie().pipe(
+      map(userInfo => {
+        if (userInfo.userRole === 'admin' || userInfo.userRole === 'employee') {
+          return true; // Autoriser l'accès pour les admin et les employés
         }
-        return this.authService.getUserInfoFromCookie().pipe(
-          map(userInfo => {
-            if (userInfo.userRole === 'admin' || userInfo.userRole === 'employee') {
-              return true;
-            }
-            this.router.navigate(['/']);
-            return false;
-          }),
-          catchError(error => {
-            // Si une erreur se produit (par exemple, un token invalide), redirigez l'utilisateur vers la page de connexion
-            console.error('Une erreur est survenue lors de la vérification de l\'authentification: ', error);
-            this.router.navigate(['auth/login']);
-            return of(false); // Renvoie un nouvel Observable indiquant que l'authentification a échoué
-          })
-        );
+        this.router.navigate(['/']); // Rediriger les autres rôles
+        return false;
+      }),
+      catchError(error => {
+        console.error('Erreur lors de la vérification de l\'authentification:', error);
+        this.router.navigate(['auth/login']); // Redirection en cas d'erreur
+        return of(false);
       })
     );
   }

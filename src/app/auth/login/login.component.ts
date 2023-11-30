@@ -84,23 +84,28 @@ export class LoginComponent implements OnInit {
       const loginData = this.loginForm.value;
 
       this.auth.login(loginData).subscribe(
-        (result) => {
-          this.submissionResult = {
-            success: true,
-            message: result.message,
-          };
-          this.loginForm.reset(); // Réinitialiser le formulaire après la soumission réussie
-          /*this.router.navigate(['home'])*/
+        () => {
+          // Connexion réussie, réinitialiser le formulaire
+          this.loginForm.reset();
+  
+          // Vérifier l'état d'authentification avec les infos utilisateur
+          this.auth.getUserInfoFromCookie().subscribe(userInfo => {
+            this.isLoggedIn = true; // Mettre à jour l'état de connexion
+            // Rediriger l'utilisateur en fonction de son rôle
+            // Exemple: this.router.navigate(['/dashboard']); 
+          }, error => {
+            console.error("Erreur lors de la récupération des infos utilisateur:", error);
+            // Gérer l'erreur (par exemple, afficher un message)
+          });
         },
         (err: Error) => {
-          console.error("==============>>>>>>>>", err);
+          console.error("Erreur lors de la connexion:", err);
           this.submissionResult = {
             success: false,
-            message:
-              "Une erreur s'est produite lors de la connexion. Veuillez réessayer plus tard.",
+            message: "Une erreur s'est produite lors de la connexion. Veuillez réessayer plus tard.",
           };
         }
-      )
+      );
     }
   }
 

@@ -129,45 +129,6 @@ export class AuthService {
     );
   }
 
-  // login({ email, password }: any): Observable<any> {
-  //   console.log('login: Attempting to log in with', email);
-  //   const credentials = { email, password };
-  //   console.log("user try to log with user name : ", credentials.email, " and password : ", credentials.password);
-
-  //   return this.http.post<AuthResponse>(this.apiUrl + '/user/login', credentials).pipe(
-  //     switchMap((response) => {
-  //       if (!response.error) {
-  //         const tokenDecoded = jwtDecode<JwtPayload>(response.jwt);
-  //         const roleUser = tokenDecoded.role as string;
-  //         const roleId = tokenDecoded.id as string;
-  //         this.setToken(response.jwt);
-  //         this.setRoleUser(roleUser);
-  //         this.setIdUser(roleId);
-
-  //         // Au lieu de naviguer ici, retournez un nouvel Observable qui décide où naviguer.
-  //         return of(roleUser); // Ici, 'of' est utilisé pour transformer la valeur en Observable.
-  //       } else {
-  //         return throwError(() => new Error(response.message[0]));
-  //       }
-  //     }),
-  //     map(roleUser => {
-  //       if (roleUser === 'admin') {
-  //         this.router.navigate(['/admin/dashboard']);
-  //       } else if (roleUser === 'employee') {
-  //         // Gérez les autres cas de rôle ici.
-  //       } else if (roleUser === 'customer') {
-  //         this.router.navigate(['/concours']);
-  //       } else {
-
-  //       }
-  //       return roleUser; // Vous pouvez toujours renvoyer le rôle si nécessaire pour la suite du traitement.
-  //     }),
-  //     catchError((error) => {
-  //       throw error;
-  //     })
-  //   );
-  // }
-
   login({ email, password }: any): Observable<any> {
     const credentials = { email, password };
   
