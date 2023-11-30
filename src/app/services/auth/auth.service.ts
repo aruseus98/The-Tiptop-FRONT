@@ -156,7 +156,7 @@ export class AuthService {
   login({ email, password }: any): Observable<any> {
     const credentials = { email, password };
   
-    return this.http.post<AuthResponse>(this.apiUrl + '/user/login', credentials).pipe(
+    return this.http.post<AuthResponse>(this.apiUrl + '/user/login', credentials, { withCredentials: true }).pipe(
       switchMap(response => {
         if (!response.error) {
           // La réponse est maintenant un cookie set par le serveur, donc pas de JWT dans la réponse JSON
