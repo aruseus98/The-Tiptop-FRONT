@@ -4,7 +4,9 @@ FROM node:latest AS builder
 WORKDIR /var/jenkins_home/workspace/branches-pipeline_secure-angular/angular
 
 COPY package*.json ./
-RUN npm install
+# Nettoie le cache après l'installation
+RUN npm install && npm cache clean --force 
+COPY . .
 COPY . .
 # Construire pour SSR
 RUN npm run build:ssr:dev 

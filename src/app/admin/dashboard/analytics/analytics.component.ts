@@ -74,6 +74,7 @@ export class AnalyticsComponent implements OnInit {
   
 
   ngOnInit() { // Initialise au chargement du component
+  
     // Vérification du role pour passer true à la variable "isLoggedAsAdmin"
     this.auth.getUserInfoFromCookie().subscribe(
       userInfo => {
@@ -81,10 +82,12 @@ export class AnalyticsComponent implements OnInit {
           if (userInfo.userRole === "admin") {
               console.log("Utilisateur est admin");
               this.isLoggedAsAdmin = true;
+                  // Forcer la détection des changements pour s'assurer que les éléments canvas sont rendus
+              this.changeDetectorRef.detectChanges();
+              this.initializeChartsIfAdmin();
           } else {
               console.log("Utilisateur n'est pas admin");
           }
-          this.loadInitialData();
       },
       error => {
           console.error("Erreur lors de la récupération des informations de l'utilisateur:", error);
@@ -93,7 +96,14 @@ export class AnalyticsComponent implements OnInit {
     );
   }
 
-  ngAfterViewInit() {
+  initializeChartsIfAdmin() {
+    if (this.isLoggedAsAdmin) {
+      // Les éléments canvas sont maintenant disponibles, initialiser les graphiques
+      this.loadInitialData();
+    }
+  }
+  loadInitialData() {
+
     // Vérifiez que les éléments canvas et canvasPie sont présents
     if (this.canvas && this.canvas.nativeElement && this.canvasPie && this.canvasPie.nativeElement) {
       // Initialisation des graphiques ici
@@ -143,9 +153,6 @@ export class AnalyticsComponent implements OnInit {
         }
       });
     }
-  }
-
-  loadInitialData() {
 
     this.adminService.getUsersWithRoleClient().subscribe(
       (users: UserAdmin[]) => {
@@ -153,6 +160,12 @@ export class AnalyticsComponent implements OnInit {
         this.filteredUsers = [...this.allUsers]; // Initialise filteredUsers avec toutes les données
         this.totalItems = this.allUsers.length; // Initialise le nombre total d'éléments pour la pagination
         const ageCounts = this.ageService.calculateAgeCounts(this.allUsers); // Appel du service age pour calculer l'âge de chaque user
+            // Vérifier que ageCounts est bien défini et a des données valides
+        if (ageCounts && Object.keys(ageCounts).length > 0) {
+          this.updateChartData(ageCounts);
+        } else {
+          console.error('Les données de ageCounts ne sont pas valides:', ageCounts);
+        }
         this.updateChartData(ageCounts);
         this.refreshUsersFilters(); // Initialise les utilisateurs affichés
         //console.log('---->', this.allUsers);
