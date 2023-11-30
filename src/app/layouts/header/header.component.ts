@@ -58,12 +58,20 @@ export class HeaderComponent implements OnInit {
     });
   }
 
-  checkLoginStatus(): void {
+  checkLoginStatus() {
     this.auth.getUserInfoFromCookie().subscribe({
       next: (userInfo) => {
         this.isLoggedIn = true;
-        this.isLoggedAsAdmin = userInfo.userRole === 'admin';
-        this.isLoggedAsEmploye = userInfo.userRole === 'employee';
+        this.isLoggedAsAdmin = false;
+        this.isLoggedAsEmploye = false;
+  
+        // Mettre à jour les rôles en fonction du rôle obtenu
+        if (userInfo.userRole === 'admin') {
+          this.isLoggedAsAdmin = true;
+        } else if (userInfo.userRole === 'employee') {
+          this.isLoggedAsEmploye = true;
+        }
+        
         // Vous pourriez également mettre à jour userData ici, si nécessaire
         // ...
       },
