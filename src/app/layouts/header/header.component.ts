@@ -24,6 +24,10 @@ export class HeaderComponent implements OnInit {
   constructor(private auth: AuthService, private userService: UserService, private router: Router, private cookieService: CookieService) { }
 
   ngOnInit(): void {
+    this.auth.isLoggedIn().subscribe((loggedIn) => {
+      this.isLoggedIn = loggedIn; // vérifie l'etat de la connexion (true si connecté)
+      console.log(loggedIn);
+    });
     this.checkLoginStatus();
     console.log(this.checkLoginStatus);
     // this.auth.isLoggedIn().subscribe((loggedIn) => {
