@@ -16,9 +16,8 @@ export class AdminService {
   constructor(private http: HttpClient, private cookieService: CookieService) { }
 
   getUsersWithRoleClient(): Observable<UserAdmin[]> {
-    // HttpClient assume par défaut que la réponse est un JSON, donc pas besoin de .json()
     return this.http.get<{ users: UserAdmin[] }>(this.endpointUrl + '/user/role/customer', { withCredentials: true }).pipe(
-      map(response => response.users) // Assurez-vous que cela renvoie un tableau
+      map(response => response.users) // Transforme la réponse pour extraire les utilisateurs
     );
   }
 
