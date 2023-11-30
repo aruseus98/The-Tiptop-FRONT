@@ -74,13 +74,23 @@ export class AnalyticsComponent implements OnInit {
   
 
   ngOnInit() { // Initialise au chargement du component
-    console.log(this.auth.getRoleUser());
     // Vérification du role pour passer true à la variable "isLoggedAsAdmin"
-    if (this.auth.getRoleUser() === "admin") {
-      console.log("ok");
-      this.isLoggedAsAdmin = true;
-    } else console.log("not admin");
-    this.loadInitialData();
+    this.auth.getUserInfoFromCookie().subscribe(
+      userInfo => {
+          console.log(userInfo); // Affiche les informations de l'utilisateur
+          if (userInfo.userRole === "admin") {
+              console.log("Utilisateur est admin");
+              this.isLoggedAsAdmin = true;
+          } else {
+              console.log("Utilisateur n'est pas admin");
+          }
+          this.loadInitialData();
+      },
+      error => {
+          console.error("Erreur lors de la récupération des informations de l'utilisateur:", error);
+          // Gérer l'erreur ici
+      }
+    );
   }
 
   ngAfterViewInit() {

@@ -96,9 +96,9 @@ export class AuthService {
   }
 
   // Méthode pour récupérer le rôle de l'utilisateur connecté depuis les cookies
-  getRoleUser(): string | null {
-    return this.cookieService.get('userRole'); 
-  }
+  // getRoleUser(): string | null {
+  //   return this.cookieService.get('userRole'); 
+  // }
 
   // Appelé lors de la connexion pour stocker l'id du user dans les cookies
   setIdUser(userId: string) {
