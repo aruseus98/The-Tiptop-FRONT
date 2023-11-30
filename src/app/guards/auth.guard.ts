@@ -19,7 +19,7 @@ export class authGuard implements CanActivate {
         }
         return this.authService.getUserInfoFromCookie().pipe(
           map(userInfo => {
-            if (userInfo.role === 'admin' || userInfo.role === 'employee') {
+            if (userInfo.userRole === 'admin' || userInfo.userRole === 'employee') {
               return true;
             }
             this.router.navigate(['/']);

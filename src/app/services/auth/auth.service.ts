@@ -108,8 +108,6 @@ export class AuthService {
 
   logout() {
     this.cookieService.delete('token');
-    this.cookieService.delete('userRole');
-    this.cookieService.delete('userId');
     this.isAuthenticated.next(false); // Émet un signal que l'utilisateur n'est plus authentifié
     this.router.navigate(['']);
   }
@@ -161,12 +159,13 @@ export class AuthService {
         // Vérifiez si la connexion est réussie en examinant le statut de la réponse HTTP
         if (httpResponse.status === 200) {
           // Effectuez l'appel supplémentaire pour obtenir le rôle et l'ID de l'utilisateur
+          this.isAuthenticated.next(true); // Émet un signal que l'utilisateur est maintenant authentifié
           return this.getUserInfoFromCookie().pipe(
             tap(userInfo => console.log('User info from cookie:', userInfo)),
             // Mappez la réponse pour retourner true puisque la connexion a réussi
             map(userInfo => {
               // Naviguer en fonction du rôle de l'utilisateur
-              switch (userInfo.role) {
+              switch (userInfo.userRole) {
                 case 'admin':
                   this.router.navigate(['/admin/dashboard']);
                   break;
@@ -191,13 +190,14 @@ export class AuthService {
       }),
       catchError((error) => {
         console.error('Error fetching user info from cookie:', error);
+        this.isAuthenticated.next(false); // Émet un signal que l'utilisateur n'est plus authentifié
         throw error;
       })
     );
   }
   
-  getUserInfoFromCookie(): Observable<{ role: string, id: string }> {
-    return this.http.get<{ role: string, id: string }>(`${this.apiUrl}/user/cookie/auth`, { withCredentials: true }).pipe(
+  getUserInfoFromCookie(): Observable<{ userRole: string, userId: number }> {
+    return this.http.get<{ userRole: string, userId: number }>(`${this.apiUrl}/user/cookie/auth`, { withCredentials: true }).pipe(
       tap(userInfo => console.log('User info from cookie:', userInfo)) // Ajoutez ceci pour logger la réponse
     ); // On ajout withCredentials: true pour indiquer à Angular d'envoyer le cookie qui a été stocké dans la requête
   }
