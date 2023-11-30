@@ -23,7 +23,8 @@ pipeline {
                     def buildNumber = env.BUILD_NUMBER
                     def dockerFileBuild = (currentBranch == 'main') ? 'Dockerfile.prod' :
                                           (currentBranch == 'preprod') ? 'Dockerfile.preprod' :
-                                          'Dockerfile.dev' 
+                                          (currentBranch == 'dev') ? 'Dockerfile.dev' :
+                                          'Dockerfile.unknown' 
 
                     echo "Current branch: ${currentBranch}"
                     echo "Folder name set to: ${folderName}"
