@@ -24,6 +24,7 @@ export class HeaderComponent implements OnInit {
   constructor(private auth: AuthService, private userService: UserService, private router: Router, private cookieService: CookieService) { }
 
   ngOnInit(): void {
+    this.checkLoginStatus();
     this.auth.isLoggedIn().subscribe((loggedIn) => {
       this.isLoggedIn = loggedIn;
     });
@@ -48,15 +49,29 @@ export class HeaderComponent implements OnInit {
         }
       });
     }
-
-
     // Permet de remonté tout en haut de la page quand on clique sur un lien du menu
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         window.scroll(0, 0); // Positionnement instantané en haut de la page
       }
     });
+  }
 
+  checkLoginStatus(): void {
+    this.auth.getUserInfoFromCookie().subscribe({
+      next: (data) => {
+        this.isLoggedIn = true;
+        //this.userData = data;
+        this.isLoggedAsAdmin = data.userRole === 'admin';
+        this.isLoggedAsEmploye = data.userRole === 'employee';
+      },
+      error: (error) => {
+        console.error('Erreur lors de la vérification de l\'authentification:', error);
+        this.isLoggedIn = false;
+        this.isLoggedAsAdmin = false;
+        this.isLoggedAsEmploye = false;
+      }
+    });
   }
 
   fetchUserData() {
