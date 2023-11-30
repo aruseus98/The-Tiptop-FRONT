@@ -156,10 +156,10 @@ export class AuthService {
   login({ email, password }: any): Observable<any> {
     const credentials = { email, password };
   
-    return this.http.post<AuthResponse>(this.apiUrl + '/user/login', credentials, { withCredentials: true }).pipe(
-      switchMap(response => {
-        // Si la connexion est réussie, la réponse devrait indiquer que error est false
-        if (!response.error) {
+    return this.http.post<AuthResponse>(this.apiUrl + '/user/login', credentials, { withCredentials: true, observe: 'response' }).pipe(
+      switchMap(httpResponse => {
+        // Vérifiez si la connexion est réussie en examinant le statut de la réponse HTTP
+        if (httpResponse.status === 200) {
           // Effectuez l'appel supplémentaire pour obtenir le rôle et l'ID de l'utilisateur
           return this.getUserInfoFromCookie().pipe(
             // Mappez la réponse pour retourner true puisque la connexion a réussi
@@ -183,8 +183,9 @@ export class AuthService {
             })
           );
         } else {
-          // Si la réponse indique une erreur, renvoyez une erreur dans le flux Observable
-          return throwError(() => new Error(response.message[0]));
+          // Si la réponse indique une erreur ou un statut inattendu, renvoyez une erreur dans le flux Observable
+          const errorResponse = httpResponse.body as AuthResponse; // cast le corps en tant que AuthResponse
+          return throwError(() => new Error(errorResponse.message.join('. '))); // Joignez les messages s'il y en a plusieurs
         }
       }),
       catchError((error) => {
