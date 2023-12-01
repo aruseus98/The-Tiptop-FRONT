@@ -88,7 +88,7 @@ export class HeaderComponent implements OnInit {
         }
       },
       error: (error) => {
-        console.error('Erreur lors de la vérification de l\'authentification:', error);
+        //console.error('Erreur lors de la vérification de l\'authentification:', error);
         this.isLoggedIn = false;
         this.isLoggedAsAdmin = false;
         this.isLoggedAsEmploye = false;
