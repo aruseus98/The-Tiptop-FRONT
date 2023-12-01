@@ -32,7 +32,16 @@ export class HeaderComponent implements OnInit {
     //   this.isLoggedIn = isLoggedIn;
     //   // Autres logiques en fonction de l'état d'authentification
     // });
-    this.checkLoginStatus();
+    this.auth.checkCookiePresence().subscribe(cookiePresent => {
+      if (cookiePresent){
+        this.checkLoginStatus();
+      }
+      else{
+        // Si le cookie n'est pas présent ou invalide, réglez l'état d'authentification sur false
+        console.log('Aucun utilisateur connecté');
+      }
+    });
+    
     // this.auth.isLoggedIn().subscribe((loggedIn) => {
     //   this.isLoggedIn = loggedIn;
     // });
@@ -64,7 +73,6 @@ export class HeaderComponent implements OnInit {
       }
     });
   }
-
   checkLoginStatus() {
     this.auth.getUserInfoFromCookie().subscribe({
       next: (userInfo) => {
@@ -78,9 +86,6 @@ export class HeaderComponent implements OnInit {
         } else if (userInfo.userRole === 'employee') {
           this.isLoggedAsEmploye = true;
         }
-        
-        // Vous pourriez également mettre à jour userData ici, si nécessaire
-        // ...
       },
       error: (error) => {
         console.error('Erreur lors de la vérification de l\'authentification:', error);
