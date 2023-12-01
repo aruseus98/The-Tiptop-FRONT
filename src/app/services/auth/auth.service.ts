@@ -51,6 +51,10 @@ export class AuthService {
       });
   }
 
+  checkCookiePresence(): Observable<boolean> {
+    return this.http.post<boolean>(`${this.apiUrl}/user/cookie-presence`, { withCredentials: true });
+  }
+
   isLoggedIn() {
     return this.isAuthenticated.asObservable();
   }

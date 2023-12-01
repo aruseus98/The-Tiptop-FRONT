@@ -17,10 +17,17 @@ export class AppComponent {
   constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
-    // Initialiser l'état d'authentification
-    this.authService.checkAuthenticationStatus();
-    this.authService.isLoggedIn().subscribe(isLoggedIn => {
-      console.log('Utilisateur est connecté:', isLoggedIn);
+    this.authService.checkCookiePresence().subscribe(cookiePresent => {
+      if (cookiePresent) {
+        // Si le cookie est présent et valide, vérifiez l'état d'authentification
+        this.authService.checkAuthenticationStatus();
+        this.authService.isLoggedIn().subscribe(isLoggedIn => {
+          console.log('Utilisateur est connecté:', isLoggedIn);
+        });
+      } else {
+        // Si le cookie n'est pas présent ou invalide, réglez l'état d'authentification sur false
+        console.log('Aucun utilisateur connecté');
+      }
     });
   }
 }
